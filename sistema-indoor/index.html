@@ -21,8 +21,8 @@
     .stage {
       position: relative;
       flex: 1;
-      width: 100%;
-      height: calc(100vh - 46px);
+      width: 100vw;
+      height: calc(100vh - 32px);
       overflow: hidden;
       background: #000;
       display: flex;
@@ -44,32 +44,33 @@
       transition: opacity 0.6s ease;
     }
 
-    /* Imagem principal forçada a caber 100% sem cortes e sem ser coberta */
+    /* Imagem principal preenchendo toda a área útil sem ser coberta pelo letreiro */
     .main-slide {
       position: relative;
       z-index: 2;
       width: 100%;
       height: 100%;
-      object-fit: contain;
+      object-fit: fill;
+      display: block;
       transition: opacity 0.5s ease;
     }
 
     /* Selo discreto superior esquerdo */
     .brand-badge {
       position: absolute;
-      top: 14px;
-      left: 16px;
+      top: 12px;
+      left: 14px;
       z-index: 10;
       background: rgba(15, 23, 42, 0.72);
       border: 1px solid rgba(255, 255, 255, 0.15);
-      padding: 6px 14px;
+      padding: 5px 12px;
       border-radius: 8px;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       font-weight: 700;
       letter-spacing: 0.5px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 7px;
       backdrop-filter: blur(6px);
     }
     .brand-dot {
@@ -82,24 +83,24 @@
     /* Relógio menor e discreto no topo direito (sem marcador de clima) */
     .clock-box {
       position: absolute;
-      top: 14px;
-      right: 16px;
+      top: 12px;
+      right: 14px;
       z-index: 10;
       background: rgba(15, 23, 42, 0.72);
       border: 1px solid rgba(255, 255, 255, 0.15);
-      padding: 5px 12px;
+      padding: 4px 10px;
       border-radius: 8px;
       text-align: right;
       backdrop-filter: blur(6px);
     }
     .clock-time {
-      font-size: 1.05rem;
+      font-size: 0.98rem;
       font-weight: 700;
       color: #34d399;
       line-height: 1.1;
     }
     .clock-date {
-      font-size: 0.68rem;
+      font-size: 0.65rem;
       color: #cbd5e1;
       margin-top: 2px;
     }
@@ -107,35 +108,35 @@
     /* QR Code flutuante opcional */
     .qr-card {
       position: absolute;
-      bottom: 14px;
-      right: 16px;
+      bottom: 12px;
+      right: 14px;
       z-index: 10;
       background: #fff;
       color: #0f172a;
-      padding: 8px;
+      padding: 7px;
       border-radius: 10px;
       text-align: center;
       box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
       display: none;
     }
     .qr-card img {
-      width: 86px;
-      height: 86px;
+      width: 82px;
+      height: 82px;
       display: block;
     }
     .qr-card span {
       display: block;
-      font-size: 0.65rem;
+      font-size: 0.62rem;
       font-weight: 800;
-      margin-top: 4px;
+      margin-top: 3px;
       color: #065f46;
       text-transform: uppercase;
     }
 
-    /* Barra inferior separada sem linha azul superior */
+    /* Barra inferior reduzida (32px) sem linha azul superior */
     .ticker-bar {
-      height: 46px;
-      width: 100%;
+      height: 32px;
+      width: 100vw;
       background: #090d16;
       border-top: none;
       display: flex;
@@ -147,13 +148,13 @@
       background: #10b981;
       color: #022c22;
       font-weight: 800;
-      font-size: 0.8rem;
-      padding: 0 16px;
+      font-size: 0.72rem;
+      padding: 0 12px;
       height: 100%;
       display: flex;
       align-items: center;
       white-space: nowrap;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.4px;
     }
     .ticker-track {
       flex: 1;
@@ -164,7 +165,7 @@
     .ticker-text {
       display: inline-block;
       padding-left: 100%;
-      font-size: 1.05rem;
+      font-size: 0.9rem;
       font-weight: 600;
       color: #f8fafc;
       animation: marquee 22s linear infinite;
@@ -210,7 +211,7 @@
     </div>
   </div>
 
-  <!-- Letreiro Inferior Isolado -->
+  <!-- Letreiro Inferior Isolado e Mais Baixo -->
   <div class="ticker-bar">
     <div class="ticker-label">📢 AVISOS</div>
     <div class="ticker-track">
