@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mídia Indoor - Player TV</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background-color: #000;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Área superior reservada 100% para a propaganda (nunca coberta pelo letreiro) */
+    .stage {
+      position: relative;
+      flex: 1;
+      width: 100%;
+      height: calc(100vh - 46px);
+      overflow: hidden;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Fundo com 50% da imagem */
+    .bg-blur {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.5;
+      filter: blur(18px) brightness(0.75);
+      transform: scale(1.06);
+      z-index: 1;
+      transition: opacity 0.6s ease;
+    }
+
+    /* Imagem principal forçada a caber 100% sem cortes e sem ser coberta */
+    .main-slide {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      transition: opacity 0.5s ease;
+    }
+
+    /* Selo discreto superior esquerdo */
+    .brand-badge {
+      position: absolute;
+      top: 14px;
+      left: 16px;
+      z-index: 10;
+      background: rgba(15, 23, 42, 0.72);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      backdrop-filter: blur(6px);
+    }
+    .brand-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+    }
+
+    /* Relógio menor e discreto no topo direito (sem marcador de clima) */
+    .clock-box {
+      position: absolute;
+      top: 14px;
+      right: 16px;
+      z-index: 10;
+      background: rgba(15, 23, 42, 0.72);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 5px 12px;
+      border-radius: 8px;
+      text-align: right;
+      backdrop-filter: blur(6px);
+    }
+    .clock-time {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #34d399;
+      line-height: 1.1;
+    }
+    .clock-date {
+      font-size: 0.68rem;
+      color: #cbd5e1;
+      margin-top: 2px;
+    }
+
+    /* QR Code flutuante opcional */
+    .qr-card {
+      position: absolute;
+      bottom: 14px;
+      right: 16px;
+      z-index: 10;
+      background: #fff;
+      color: #0f172a;
+      padding: 8px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+      display: none;
+    }
+    .qr-card img {
+      width: 86px;
+      height: 86px;
+      display: block;
+    }
+    .qr-card span {
+      display: block;
+      font-size: 0.65rem;
+      font-weight: 800;
+      margin-top: 4px;
+      color: #065f46;
+      text-transform: uppercase;
+    }
+
+    /* Barra inferior separada sem linha azul superior */
+    .ticker-bar {
+      height: 46px;
+      width: 100%;
+      background: #090d16;
+      border-top: none;
+      display: flex;
+      align-items: center;
+      z-index: 20;
+      overflow: hidden;
+    }
+    .ticker-label {
+      background: #10b981;
+      color: #022c22;
+      font-weight: 800;
+      font-size: 0.8rem;
+      padding: 0 16px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+      letter-spacing: 0.5px;
+    }
+    .ticker-track {
+      flex: 1;
+      overflow: hidden;
+      white-space: nowrap;
+      position: relative;
+    }
+    .ticker-text {
+      display: inline-block;
+      padding-left: 100%;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #f8fafc;
+      animation: marquee 22s linear infinite;
+    }
+
+    @keyframes marquee {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-100%); }
+    }
+
+    .empty-msg {
+      z-index: 5;
+      text-align: center;
+      color: #94a3b8;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Palco da Imagem (Acima do Letreiro) -->
+  <div class="stage">
+    <div class="brand-badge">
+      <span class="brand-dot"></span>
+      <span id="tv-brand">MÍDIA INDOOR</span>
+    </div>
+
+    <div class="clock-box">
+      <div class="clock-time" id="clock-time">00:00:00</div>
+      <div class="clock-date" id="clock-date">00/00/0000</div>
+    </div>
+
+    <img id="bg-blur" class="bg-blur" src="" alt="">
+    <img id="main-slide" class="main-slide" src="" alt="Banner" style="display:none;">
+
+    <div id="empty-state" class="empty-msg">
+      <h2>Aguardando programação...</h2>
+      <p>Adicione banners no painel Admin.</p>
+    </div>
+
+    <div class="qr-card" id="qr-card">
+      <img id="qr-img" src="" alt="QR Code">
+      <span>Fale no WhatsApp</span>
+    </div>
+  </div>
+
+  <!-- Letreiro Inferior Isolado -->
+  <div class="ticker-bar">
+    <div class="ticker-label">📢 AVISOS</div>
+    <div class="ticker-track">
+      <div class="ticker-text" id="tv-ticker">Seja bem-vindo! Acompanhe nossas novidades e ofertas na tela.</div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCb2e5ygvIiUOjyk8GBrZY2VHWiGV2J40",
+      authDomain: "midia-indoor-tv.firebaseapp.com",
+      databaseURL: "https://midia-indoor-tv-default-rtdb.firebaseio.com",
+      projectId: "midia-indoor-tv",
+      storageBucket: "midia-indoor-tv.firebasestorage.app",
+      messagingSenderId: "109737905370",
+      appId: "1:109737905370:web:1cddd91892dd64255d69e3"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const configRef = ref(db, 'indoor_config');
+
+    let playlist = [];
+    let fixedDuration = 10;
+    let currentIndex = 0;
+    let slideTimer = null;
+
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('clock-time').textContent = now.toLocaleTimeString('pt-BR');
+      document.getElementById('clock-date').textContent = now.toLocaleDateString('pt-BR');
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    onValue(configRef, (snapshot) => {
+      const data = snapshot.val();
+      if (!data) return;
+
+      document.getElementById('tv-brand').textContent = data.brandName || 'MÍDIA INDOOR';
+
+      const tickerEl = document.getElementById('tv-ticker');
+      const newTicker = data.tickerText || 'Seja bem-vindo! Acompanhe nossas novidades e ofertas na tela.';
+      if (tickerEl.textContent !== newTicker) {
+        tickerEl.textContent = newTicker;
+      }
+
+      fixedDuration = parseInt(data.slideDuration, 10) || 10;
+      playlist = data.playlist || [];
+      currentIndex = 0;
+      playCurrentSlide();
+    });
+
+    function playCurrentSlide() {
+      clearTimeout(slideTimer);
+
+      const mainImg = document.getElementById('main-slide');
+      const bgImg = document.getElementById('bg-blur');
+      const emptyState = document.getElementById('empty-state');
+      const qrCard = document.getElementById('qr-card');
+      const qrImg = document.getElementById('qr-img');
+
+      if (playlist.length === 0) {
+        mainImg.style.display = 'none';
+        bgImg.style.display = 'none';
+        qrCard.style.display = 'none';
+        emptyState.style.display = 'block';
+        return;
+      }
+
+      if (currentIndex >= playlist.length) {
+        currentIndex = 0;
+      }
+
+      const item = playlist[currentIndex];
+      emptyState.style.display = 'none';
+      mainImg.style.display = 'block';
+      bgImg.style.display = 'block';
+
+      mainImg.src = item.src;
+      bgImg.src = item.src;
+
+      if (item.qrLink) {
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(item.qrLink)}`;
+        qrCard.style.display = 'block';
+      } else {
+        qrCard.style.display = 'none';
+      }
+
+      const durationMs = fixedDuration * 1000;
+      slideTimer = setTimeout(() => {
+        currentIndex = (currentIndex + 1) % playlist.length;
+        playCurrentSlide();
+      }, durationMs);
+    }
+  </script>
+
+</body>
+</html>

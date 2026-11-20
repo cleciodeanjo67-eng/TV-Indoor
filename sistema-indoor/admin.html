@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel Mídia Indoor - Admin</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: #0f172a; color: #f8fafc; padding: 20px; }
+    .container { max-width: 800px; margin: 0 auto; }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #1e293b;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    h1 { font-size: 1.45rem; color: #38bdf8; }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .status {
+      font-size: 0.82rem;
+      padding: 6px 12px;
+      border-radius: 20px;
+      background: #064e3b;
+      color: #34d399;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+
+    .gear-btn {
+      background: #1e293b;
+      color: #f8fafc;
+      border: 1px solid #475569;
+      border-radius: 10px;
+      width: 42px;
+      height: 42px;
+      font-size: 1.25rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.2s;
+    }
+    .gear-btn:hover {
+      border-color: #38bdf8;
+      background: #334155;
+      transform: rotate(30deg);
+    }
+
+    .top-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .btn-add-banner {
+      background: #0284c7;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 13px 20px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: 0.2s;
+    }
+    .btn-add-banner:hover {
+      background: #0369a1;
+    }
+
+    .card {
+      background: #1e293b;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border: 1px solid #334155;
+    }
+    .card h2 {
+      font-size: 1.15rem;
+      margin-bottom: 16px;
+      color: #e2e8f0;
+      border-left: 4px solid #38bdf8;
+      padding-left: 10px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+      color: #94a3b8;
+    }
+
+    input[type="text"], input[type="number"], textarea {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #475569;
+      background: #0f172a;
+      color: #fff;
+      font-size: 1rem;
+      margin-bottom: 14px;
+    }
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: #38bdf8;
+    }
+
+    .upload-box {
+      border: 2px dashed #475569;
+      border-radius: 10px;
+      padding: 18px;
+      text-align: center;
+      background: #0f172a;
+      margin-bottom: 14px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .upload-box:hover {
+      border-color: #38bdf8;
+      background: #1e293b;
+    }
+    .upload-box input[type="file"] { display: none; }
+    .upload-label {
+      cursor: pointer;
+      color: #38bdf8;
+      font-weight: bold;
+      display: block;
+    }
+    .upload-hint {
+      font-size: 0.8rem;
+      color: #64748b;
+      margin-top: 6px;
+    }
+
+    #preview-container {
+      display: none;
+      margin-bottom: 14px;
+      text-align: center;
+    }
+    #preview-img {
+      max-height: 170px;
+      max-width: 100%;
+      border-radius: 8px;
+      border: 1px solid #475569;
+    }
+
+    .btn {
+      display: inline-block;
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+      text-align: center;
+    }
+    .btn-primary { background: #0284c7; color: #fff; }
+    .btn-primary:hover { background: #0369a1; }
+    .btn-success { background: #10b981; color: #022c22; font-size: 1.1rem; }
+    .btn-success:hover { background: #059669; }
+    .btn-danger {
+      background: #ef4444;
+      color: #fff;
+      padding: 8px 12px;
+      width: auto;
+      font-size: 0.85rem;
+    }
+    .btn-danger:hover { background: #dc2626; }
+    .btn-secondary {
+      background: #334155;
+      color: #f8fafc;
+      width: auto;
+      padding: 10px 16px;
+      font-size: 0.9rem;
+    }
+
+    .media-list { display: flex; flex-direction: column; gap: 12px; }
+    .media-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #0f172a;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+      gap: 12px;
+    }
+    .media-item img {
+      width: 80px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: 6px;
+      background: #000;
+    }
+    .media-info { flex: 1; overflow: hidden; }
+    .media-title {
+      font-weight: bold;
+      font-size: 0.95rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .media-meta { font-size: 0.8rem; color: #94a3b8; }
+
+    /* Modais (Engrenagem e + Banner) */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.84);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-backdrop.active { display: flex; }
+    .modal-box {
+      background: #1e293b;
+      border: 1px solid #475569;
+      border-radius: 14px;
+      width: 100%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 22px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75);
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #334155;
+    }
+    .modal-header h3 { font-size: 1.1rem; color: #38bdf8; }
+    .close-btn {
+      background: none;
+      border: none;
+      color: #94a3b8;
+      font-size: 1.4rem;
+      cursor: pointer;
+    }
+    .close-btn:hover { color: #fff; }
+    .modal-section-title {
+      font-size: 0.92rem;
+      font-weight: bold;
+      color: #e2e8f0;
+      margin-bottom: 10px;
+      padding-left: 8px;
+      border-left: 3px solid #10b981;
+    }
+    .modal-divider {
+      border: none;
+      border-top: 1px solid #334155;
+      margin: 14px 0 16px;
+    }
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .modal-footer .btn { width: auto; padding: 10px 18px; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>📺 Painel Mídia Indoor</h1>
+    <div class="header-actions">
+      <span class="status" id="db-status">Conectando...</span>
+      <button class="gear-btn" id="open-settings-btn" title="Configurações da Tela, Letreiro e Temporizador">⚙️</button>
+    </div>
+  </header>
+
+  <div class="top-toolbar">
+    <button class="btn-add-banner" id="open-banner-modal-btn">+ Banner</button>
+  </div>
+
+  <!-- Lista de Mídias Ativas -->
+  <div class="card">
+    <h2>Banners Ativos na TV (<span id="media-count">0</span>) • Temporizador: <span id="current-fixed-time">10</span>s</h2>
+    <div class="media-list" id="media-list">
+      <p style="color: #64748b; text-align: center;">Carregando mídias...</p>
+    </div>
+  </div>
+
+  <button class="btn btn-success" onclick="saveAllToTV()">💾 SALVAR E ATUALIZAR TV AGORA</button>
+</div>
+
+<!-- Modal do Botão "+ Banner": Adicionar Propaganda / Banner -->
+<div class="modal-backdrop" id="banner-modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>📢 Adicionar Propaganda / Banner</h3>
+      <button class="close-btn" id="close-banner-modal-btn">&times;</button>
+    </div>
+
+    <div class="upload-box" onclick="document.getElementById('file-input').click()">
+      <input type="file" id="file-input" accept="image/*">
+      <span class="upload-label">📁 Clique aqui para enviar foto do celular ou computador</span>
+      <p class="upload-hint">A imagem será otimizada automaticamente para a TV</p>
+    </div>
+
+    <div id="preview-container">
+      <img id="preview-img" src="" alt="Prévia">
+    </div>
+
+    <label for="img-url">Ou cole o Link (URL) da Imagem</label>
+    <input type="text" id="img-url" placeholder="https://exemplo.com/banner.jpg">
+
+    <label for="media-title">Identificação do Cliente</label>
+    <input type="text" id="media-title" placeholder="Ex: Casa do Gás">
+
+    <label for="qr-link">Link para QR Code no Canto (Opcional - ex: WhatsApp)</label>
+    <input type="text" id="qr-link" placeholder="Ex: https://wa.me/5577991996613">
+
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="cancel-banner-modal-btn">Cancelar</button>
+      <button class="btn btn-primary" onclick="addMedia()">+ Adicionar à Lista de Reprodução</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal da Engrenagem: Temporizador + Configurações da Tela e Letreiro -->
+<div class="modal-backdrop" id="settings-modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>⚙️ Configurações da Tela, Letreiro e Temporizador</h3>
+      <button class="close-btn" id="close-settings-btn">&times;</button>
+    </div>
+
+    <div class="modal-section-title">Temporizador da Programação</div>
+    <label for="fixed-slide-duration">Tempo de cada imagem na TV (em segundos)</label>
+    <input type="number" id="fixed-slide-duration" value="10" min="2" max="300">
+
+    <hr class="modal-divider">
+
+    <div class="modal-section-title">Configurações da Tela e Letreiro</div>
+    <label for="brand-name">Nome da Marca / Título Superior Esquerdo</label>
+    <input type="text" id="brand-name" placeholder="Ex: MÍDIA INDOOR">
+
+    <label for="ticker-text">Texto do Letreiro Inferior (Avisos)</label>
+    <input type="text" id="ticker-text" placeholder="Ex: Seja bem-vindo! Acompanhe nossas novidades e ofertas na tela.">
+
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="cancel-settings-btn">Cancelar</button>
+      <button class="btn btn-primary" id="save-settings-btn">Salvar Configurações</button>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCb2e5ygvIiUOjyk8GBrZY2VHWiGV2J40",
+    authDomain: "midia-indoor-tv.firebaseapp.com",
+    databaseURL: "https://midia-indoor-tv-default-rtdb.firebaseio.com",
+    projectId: "midia-indoor-tv",
+    storageBucket: "midia-indoor-tv.firebasestorage.app",
+    messagingSenderId: "109737905370",
+    appId: "1:109737905370:web:1cddd91892dd64255d69e3"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const configRef = ref(db, 'indoor_config');
+
+  let mediaItems = [];
+  let uploadedBase64 = "";
+  let fixedDuration = 10;
+  let brandName = "MÍDIA INDOOR";
+  let tickerText = "Seja bem-vindo! Acompanhe nossas novidades e ofertas na tela.";
+
+  // Controles do Modal "+ Banner"
+  const bannerModal = document.getElementById('banner-modal');
+
+  function clearBannerForm() {
+    uploadedBase64 = "";
+    document.getElementById('file-input').value = '';
+    document.getElementById('preview-img').src = '';
+    document.getElementById('preview-container').style.display = 'none';
+    document.getElementById('img-url').value = '';
+    document.getElementById('media-title').value = '';
+    document.getElementById('qr-link').value = '';
+  }
+
+  document.getElementById('open-banner-modal-btn').addEventListener('click', () => {
+    clearBannerForm();
+    bannerModal.classList.add('active');
+  });
+
+  document.getElementById('close-banner-modal-btn').addEventListener('click', () => {
+    bannerModal.classList.remove('active');
+  });
+
+  document.getElementById('cancel-banner-modal-btn').addEventListener('click', () => {
+    bannerModal.classList.remove('active');
+  });
+
+  // Controles do Modal da Engrenagem
+  const settingsModal = document.getElementById('settings-modal');
+  const durationInput = document.getElementById('fixed-slide-duration');
+  const brandInput = document.getElementById('brand-name');
+  const tickerInput = document.getElementById('ticker-text');
+
+  function syncModalInputs() {
+    durationInput.value = fixedDuration;
+    brandInput.value = brandName;
+    tickerInput.value = tickerText;
+  }
+
+  document.getElementById('open-settings-btn').addEventListener('click', () => {
+    syncModalInputs();
+    settingsModal.classList.add('active');
+  });
+
+  document.getElementById('close-settings-btn').addEventListener('click', () => {
+    settingsModal.classList.remove('active');
+  });
+
+  document.getElementById('cancel-settings-btn').addEventListener('click', () => {
+    syncModalInputs();
+    settingsModal.classList.remove('active');
+  });
+
+  document.getElementById('save-settings-btn').addEventListener('click', () => {
+    const val = parseInt(durationInput.value, 10);
+    if (!val || val < 2) {
+      alert('Digite um tempo válido de pelo menos 2 segundos.');
+      return;
+    }
+
+    fixedDuration = val;
+    brandName = brandInput.value.trim() || 'MÍDIA INDOOR';
+    tickerText = tickerInput.value.trim() || 'Seja bem-vindo! Acompanhe nossas novidades e ofertas na tela.';
+
+    document.getElementById('current-fixed-time').textContent = fixedDuration;
+    settingsModal.classList.remove('active');
+    renderList();
+    saveAllToTV(false);
+  });
+
+  // Monitora conexão e carrega dados atuais
+  onValue(configRef, (snapshot) => {
+    document.getElementById('db-status').textContent = '● Online (Sincronizado)';
+    const data = snapshot.val();
+    if (data) {
+      brandName = data.brandName || 'MÍDIA INDOOR';
+      tickerText = data.tickerText || 'Seja bem-vindo! Acompanhe nossas novidades e ofertas na tela.';
+      fixedDuration = parseInt(data.slideDuration, 10) || 10;
+      mediaItems = data.playlist || [];
+
+      syncModalInputs();
+      document.getElementById('current-fixed-time').textContent = fixedDuration;
+      renderList();
+    }
+  });
+
+  // Upload e compressão de imagem
+  document.getElementById('file-input').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      const img = new Image();
+      img.onload = function() {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 1280;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > MAX_WIDTH) {
+          height = Math.round((height * MAX_WIDTH) / width);
+          width = MAX_WIDTH;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        uploadedBase64 = canvas.toDataURL('image/jpeg', 0.82);
+        document.getElementById('preview-img').src = uploadedBase64;
+        document.getElementById('preview-container').style.display = 'block';
+        document.getElementById('img-url').value = '';
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  window.addMedia = function() {
+    const urlInput = document.getElementById('img-url').value.trim();
+    const finalSrc = uploadedBase64 || urlInput;
+
+    if (!finalSrc) {
+      alert('Por favor, envie uma foto ou cole o link de uma imagem.');
+      return;
+    }
+
+    const title = document.getElementById('media-title').value.trim() || 'Banner Promocional';
+    const qrLink = document.getElementById('qr-link').value.trim();
+
+    mediaItems.push({
+      id: Date.now(),
+      src: finalSrc,
+      title: title,
+      qrLink: qrLink
+    });
+
+    clearBannerForm();
+    bannerModal.classList.remove('active');
+    renderList();
+    saveAllToTV(true);
+  };
+
+  window.removeMedia = function(index) {
+    mediaItems.splice(index, 1);
+    renderList();
+    saveAllToTV(true);
+  };
+
+  function renderList() {
+    const listEl = document.getElementById('media-list');
+    document.getElementById('media-count').textContent = mediaItems.length;
+    document.getElementById('current-fixed-time').textContent = fixedDuration;
+
+    if (mediaItems.length === 0) {
+      listEl.innerHTML = '<p style="color: #64748b; text-align: center;">Nenhum banner cadastrado.</p>';
+      return;
+    }
+
+    listEl.innerHTML = mediaItems.map((item, idx) => `
+      <div class="media-item">
+        <img src="${item.src}" alt="${item.title}">
+        <div class="media-info">
+          <div class="media-title">${item.title}</div>
+          <div class="media-meta">Temporizador: ${fixedDuration}s ${item.qrLink ? '• Com QR Code' : ''}</div>
+        </div>
+        <button class="btn btn-danger" onclick="removeMedia(${idx})">Excluir</button>
+      </div>
+    `).join('');
+  }
+
+  window.saveAllToTV = function(silent = false) {
+    const payload = {
+      brandName: brandName || 'MÍDIA INDOOR',
+      tickerText: tickerText || 'Seja bem-vindo! Acompanhe nossas novidades e ofertas na tela.',
+      slideDuration: fixedDuration,
+      playlist: mediaItems,
+      updatedAt: Date.now()
+    };
+
+    set(configRef, payload)
+      .then(() => {
+        if (!silent) alert('✅ Atualizado com sucesso! A TV já está exibindo as alterações.');
+      })
+      .catch((err) => {
+        alert('Erro ao salvar: ' + err.message);
+      });
+  };
+</script>
+
+</body>
+</html>
