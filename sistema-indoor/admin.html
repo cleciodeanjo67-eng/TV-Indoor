@@ -120,44 +120,42 @@
       border-color: #38bdf8;
     }
 
-    /* Área de upload compatível com toque no celular */
+    /* Área de upload com input de arquivo nativo visível e acessível */
     .upload-box {
-      position: relative;
       border: 2px dashed #475569;
       border-radius: 10px;
-      padding: 18px;
+      padding: 16px;
       text-align: center;
       background: #0f172a;
       margin-bottom: 14px;
-      cursor: pointer;
       transition: 0.2s;
-      display: block;
       width: 100%;
     }
-    .upload-box:hover, .upload-box:active {
+    .upload-box:hover {
       border-color: #38bdf8;
       background: #1e293b;
     }
-    .upload-file-input {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      opacity: 0;
-      cursor: pointer;
-    }
-    .upload-label {
-      pointer-events: none;
+    .upload-title {
       color: #38bdf8;
       font-weight: bold;
       display: block;
       font-size: 0.98rem;
+      margin-bottom: 8px;
+    }
+    .upload-file-input {
+      width: 100%;
+      padding: 10px;
+      background: #1e293b;
+      color: #e2e8f0;
+      border: 1px solid #475569;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      cursor: pointer;
     }
     .upload-hint {
-      pointer-events: none;
       font-size: 0.8rem;
       color: #64748b;
-      margin-top: 6px;
+      margin-top: 8px;
     }
 
     #preview-container {
@@ -328,11 +326,11 @@
       <button class="close-btn" id="close-banner-modal-btn">&times;</button>
     </div>
 
-    <label for="file-input" class="upload-box">
+    <div class="upload-box">
+      <span class="upload-title">📁 Enviar foto do celular ou computador</span>
       <input type="file" id="file-input" class="upload-file-input" accept="image/*">
-      <span class="upload-label">📁 Clique aqui para enviar foto do celular ou computador</span>
-      <p class="upload-hint">A imagem será otimizada automaticamente para a TV</p>
-    </label>
+      <p class="upload-hint">Toque para escolher a imagem e permitir o acesso às fotos se solicitado</p>
+    </div>
 
     <div id="preview-container">
       <img id="preview-img" src="" alt="Prévia">
